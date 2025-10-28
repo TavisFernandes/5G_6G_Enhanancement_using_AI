@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Science Analysis - Graph Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .info-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+        }
+        
+        .info-card h2 {
+            color: #764ba2;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .model-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+        
+        .model-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .graph-container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+        }
+        
+        .graph-title {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .graph-img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+        }
+        
+        .graph-img:hover {
+            transform: scale(1.02);
+        }
+        
+        .metrics-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .metrics-table th, .metrics-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .metrics-table th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-weight: bold;
+        }
+        
+        .metrics-table tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            margin: 5px;
+        }
+        
+        .status-success {
+            background: #28a745;
+        }
+        
+        .status-info {
+            background: #17a2b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Data Science Analysis - Graph Viewer</h1>
+            <p>5G/6G Network Simulation - Machine Learning Model Comparison</p>
+        </div>
+        
+        <div class="info-card">
+            <h2>🤖 Models Analyzed (10 Total)</h2>
+            <div class="models-grid">
+                <div class="model-card">1. Linear Regression</div>
+                <div class="model-card">2. Ridge Regression</div>
+                <div class="model-card">3. Lasso Regression</div>
+                <div class="model-card">4. Logistic Regression</div>
+                <div class="model-card">5. Polynomial Regression</div>
+                <div class="model-card">6. Decision Tree</div>
+                <div class="model-card">7. Random Forest</div>
+                <div class="model-card">8. Gradient Boosting</div>
+                <div class="model-card">9. AdaBoost</div>
+                <div class="model-card">10. Neural Network (MLP)</div>
+            </div>
+        </div>
+        
+        
+        <div class="graph-container">
+            <h2 class="graph-title">1️⃣ ML Models Comparison (SAS-Style with 9 Visualizations)</h2>
+            <img src="ml_models_comparison.png" alt="ML Models Comparison" class="graph-img">
+        </div>
+        
+        <div class="graph-container">
+            <h2 class="graph-title">2️⃣ Traffic Prediction Analysis</h2>
+            <img src="traffic_prediction_analysis.png" alt="Traffic Prediction Analysis" class="graph-img">
+        </div>
+        
+        <div class="graph-container">
+            <h2 class="graph-title">3️⃣ Network Topology Analysis</h2>
+            <img src="network_topology_analysis.png" alt="Network Topology Analysis" class="graph-img">
+        </div>
+        
+        <div class="graph-container">
+            <h2 class="graph-title">4️⃣ QoS Analysis</h2>
+            <img src="qos_analysis.png" alt="QoS Analysis" class="graph-img">
+        </div>
+        
+        <div class="info-card">
+            <h2>🎯 Best Models</h2>
+            <p>
+                <span class="status-badge status-success">Best Latency Model: Gradient Boosting (MAE: 11.33ms)</span>
+            </p>
+            <p>
+                <span class="status-badge status-success">Best Throughput Model: Gradient Boosting (MAE: 10.83Mbps)</span>
+            </p>
+            <p style="margin-top: 15px;">
+                <span class="status-badge status-info">Traffic Prediction Accuracy: 100%</span>
+            </p>
+        </div>
+        
+    </div>
+</body>
+</html>

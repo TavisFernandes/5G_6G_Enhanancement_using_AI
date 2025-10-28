@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5G/6G Network Simulation Dashboard - Enhanced</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            padding: 10px;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 5px;
+            font-size: 1.5em;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            color: #666;
+            font-size: 0.8em;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        
+        .stat-card .value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-card .unit {
+            font-size: 0.7em;
+            color: #999;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 65% 35%;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .network-map {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .network-map h2 {
+bourne: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        #topologyCanvas {
+            width: 100%;
+            height: 500px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        
+        .charts-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .chart-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .chart-card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 200px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba学一做(0,0,0,0.1);
+        }
+        
+        .feature-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .feature-item .icon {
+            font-size: 1.5em;
+            margin-right: 15px;
+        }
+        
+        .additional-charts-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+        
+        .charts-grid-additional {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        .chart-card-large {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .chart-card-large h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+        
+        .chart-container-large {
+            position: relative;
+            height: 250px;
+        }
+        
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            .charts-grid-additional {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .charts-grid-additional {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 5G/6G Enhanced Network Simulation Dashboard</h1>
+            <p>Real-time network topology visualization with AI/ML enhancements (Simu5G-like interface)</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Connected UEs</h3>
+                <div class="value" id="connected-ues">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Handovers</h3>
+                <div class="value" id="total-handovers">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Latency</h3>
+                <div class="value" id="avg-latency">0<span class="unit"> ms</span></div>
+            </div>
+            <div class="stat-card">
+                <h3>Throughput</h3>
+                <div class="value" id="avg-throughput">0<span class="unit"> Mbps</span></div>
+            </div>
+            <div class="stat-card">
+                <h3>Beamforming</h3>
+                <div class="value" id="beamforming">0<span class="unit">%</span></div>
+            </div>
+            <div class="stat-card">
+                <h3>MIMO Gain</h3>
+                <div class="value" id="mimo">0<span class="unit">%</span></div>
+            </div>
+            <div class="stat-card">
+                <h3>Resources</h3>
+                <div class="value" id="resources">0<span class="unit">%</span></div>
+            </div>
+            <div class="stat-card">
+                <h3>Time</h3>
+                <div class="value" id="sim-time">0<span class="unit">s</span></div>
+            </div>
+            <div class="stat-card">
+                <h3>Terahertz</h3>
+                <div class="value" id="terahertz">0<span class="unit">%</span></div>
+            </div>
+            <div class="stat-card">
+                <h3>AI Efficiency</h3>
+                <div class="value" id="ai-efficiency">0<span class="unit">%</span></div>
+            </div>
+            <div class="stat-card">
+                <h3>Holographic</h3>
+                <div class="value" id="holographic">0<span class="unit">%</span></div>
+            </div>
+            <div class="stat-card">
+                <h3>Edge Computing</h3>
+                <div class="value" id="edge">0<span class="unit">%</span></div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="network-map">
+                <h2>📡 Network Topology Map (Simu5G-style)</h2>
+                <canvas id="topologyCanvas"></canvas>
+                <div style="margin-top: 10px; font-size: 0.85em; color: #666;">
+                    <span style="color: #2196F3;">▲</span> Macro Cells | 
+                    <span style="color: #F44336;">▲</span> Small Cells | 
+                    <span style="color: #4CAF50;">●</span> Connected UEs | 
+                    <span style="color: #9E9E9E;">○</span> Disconnected UEs
+                </div>
+            </div>
+            
+            <div class="charts-sidebar">
+                <div class="chart-card">
+                    <h2>⚡ Latency</h2>
+                    <div class="chart-container">
+                        <canvas id="latencyChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <h2>📈 Throughput</h2>
+                    <div class="chart-container">
+                        <canvas id="throughputChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <h2>🔄 Handovers</h2>
+                    <div class="chart-container">
+                        <canvas id="handoverChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="additional-charts-section">
+            <h2 style="color: #667eea; margin-bottom: 20px; font-size: 1.5em;">📊 Additional Analytics & ML Graphs</h2>
+            <div class="charts-grid-additional">
+                <div class="chart-card-large">
+                    <h2>Network Load Over Time</h2>
+                    <div class="chart-container-large">
+                        <canvas id="networkLoadChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card-large">
+                    <h2>Traffic Prediction Accuracy</h2>
+                    <div class="chart-container-large">
+                        <canvas id="predictionChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card-large">
+                    <h2>Anomaly Detection Timeline</h2>
+                    <div class="chart-container-large">
+                        <canvas id="anomalyChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card-large">
+                    <h2>Beamforming Efficiency</h2>
+                    <div class="chart-container-large">
+                        <canvas id="beamformingChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card-large">
+                    <h2>MIMO Gain Performance</h2>
+                    <div class="chart-container-large">
+                        <canvas id="mimoGainChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card-large">
+                    <h2>6G Features Overview</h2>
+                    <div class="chart-container-large">
+                        <canvas id="g6FeaturesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>🤖 AI/ML Enhancements</h3>
+                <div class="feature-item">
+                    <div class="icon">🎯</div>
+                    <div>
+                        <strong>AI Handover</strong>: Smart decisions reduce handovers by 30%
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">📊</div>
+                    <div>
+                        <strong>Traffic Prediction</strong>: 85%+ accuracy with ML
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">🔍</div>
+                    <div>
+                        <strong>Anomaly Detection</strong>: Real-time issue identification
+                    </div>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <h3>📡 Advanced 5G Features</h3>
+                <div class="feature-item">
+                    <div class="icon">🌐</div>
+                    <div>
+                        <strong>Beamforming</strong>: Targeted signal transmission
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">📶</div>
+                    <div>
+                        <strong>MIMO</strong>: Multi-antenna spatial multiplexing
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">🎛️</div>
+                    <div>
+                        <strong>Resource Blocks</strong>: Dynamic allocation
+                    </div>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <h3>📊 Network Improvements</h3>
+                <div class="feature-item">
+                    <div class="icon">⚡</div>
+                    <div>
+                        <strong>QoS Optimization</strong>: 20-40% performance boost
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">🔋</div>
+                    <div>
+                        <strong>Energy Efficiency</strong>: Reduced power consumption
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">🌍</div>
+                    <div>
+                        <strong>Coverage</strong>: Heterogeneous network deployment
+                    </div>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <h3>🚀 6G Revolutionary Features</h3>
+                <div class="feature-item">
+                    <div class="icon">⚡</div>
+                    <div>
+                        <strong>Terahertz Communication</strong>: Ultra-high speed data (100+ Gbps)
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">🤖</div>
+                    <div>
+                        <strong>AI-Integrated Networks</strong>: Autonomous network management
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">🌐</div>
+                    <div>
+                        <strong>Holographic Communications</strong>: Immersive experiences
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">💻</div>
+                    <div>
+                        <strong>Edge Computing</strong>: Low-latency processing at the edge
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">🌍</div>
+                    <div>
+                        <strong>Satellite Integration</strong>: Global seamless connectivity
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('topologyCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas size
+        canvas.width = canvas.offsetWidth;
+        canvas.height = 500;
+        
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 750 },
+            plugins: {
+                legend: { display: true, position: 'top' }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        };
+        
+        const ctx1 = document.getElementById('latencyChart').getContext('2d');
+        const latencyChart = new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Latency (ms)',
+                    data: [],
+                    borderColor: '#f093fb',
+                    backgroundColor: 'rgba(240, 147, 251, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: chartOptions
+        });
+        
+        const ctx2 = document.getElementById('throughputChart').getContext('2d');
+        const throughputChart = new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Throughput (Mbps)',
+                    data: [],
+                    borderColor: '#4facfe',
+                    backgroundColor: 'rgba(79, 172, 254, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: chartOptions
+        });
+        
+        const ctx3 = document.getElementById('handoverChart').getContext('2d');
+        const handoverChart = new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Handovers',
+                    data: [],
+                    backgroundColor: '#43e97b'
+                }]
+            },
+            options: chartOptions
+        });
+        
+        const ctx4 = document.getElementById('networkLoadChart').getContext('2d');
+        const networkLoadChart = new Chart(ctx4, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Connected UEs',
+                    data: [],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: chartOptions
+        });
+        
+        const ctx5 = document.getElementById('predictionChart').getContext('2d');
+        const predictionChart = new Chart(ctx5, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Predicted',
+                    data: [],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    tension: 0.4
+                }, {
+                    label: 'Actual',
+                    data: [],
+                    borderColor: '#764ba2',
+                    backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: chartOptions
+        });
+        
+        const ctx6 = document.getElementById('anomalyChart').getContext('2d');
+        const anomalyChart = new Chart(ctx6, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Anomalies Detected',
+                    data: [],
+                    borderColor: '#fa709a',
+                    backgroundColor: 'rgba(250, 112, 154, 0.1)',
+                    tension: 0.4,
+                    pointRadius: 5
+                }]
+            },
+            options: chartOptions
+        });
+        
+        const ctx7 = document.getElementById('beamformingChart').getContext('2d');
+        const beamformingChart = new Chart(ctx7, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Beamforming Efficiency (%)',
+                    data: [],
+                    borderColor: '#4facfe',
+                    backgroundColor: 'rgba(79, 172, 254, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: chartOptions
+        });
+        
+        const ctx8 = document.getElementById('mimoGainChart').getContext('2d');
+        const mimoGainChart = new Chart(ctx8, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'MIMO Gain (%)',
+                    data: [],
+                    borderColor: '#43e97b',
+                    backgroundColor: 'rgba(67, 233, 123, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: chartOptions
+        });
+        
+        const ctx9 = document.getElementById('g6FeaturesChart').getContext('2d');
+        const g6FeaturesChart = new Chart(ctx9, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Terahertz Utilization (%)',
+                    data: [],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'AI Efficiency (%)',
+                    data: [],
+                    borderColor: '#764ba2',
+                    backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'Holographic Capability (%)',
+                    data: [],
+                    borderColor: '#f093fb',
+                    backgroundColor: 'rgba(240, 147, 251, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'Edge Computing (%)',
+                    data: [],
+                    borderColor: '#4facfe',
+                    backgroundColor: 'rgba(79, 172, 254, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 750 },
+                plugins: {
+                    legend: { display: true, position: 'top' },
+                    title: {
+                        display: true,
+                        text: '6G Features Performance Comparison'
+                    }
+                },
+                scales: {
+                    y: { 
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Percentage (%)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    }
+                }
+            }
+        });
+        
+        function drawTopology(topology) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (!topology || !topology.base_stations) return;
+            
+            // Scale to fit canvas
+            const scale = Math.min(canvas.width / 20000, canvas.height / 20000);
+            const offset = 50;
+            
+            // Draw base stations with coverage circles
+            for (const bs of topology.base_stations) {
+                const x = bs.x * scale + offset;
+                const y = bs.y * scale + offset;
+                const radius = Math.min(bs.coverage_radius * scale, 300);
+                
+                // Draw coverage circle
+                ctx.strokeStyle = bs.type === 'macro' ? 'rgba(33, 150, 243, 0.3)' : 'rgba(244, 67, 54, 0.3)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                ctx.stroke();
+                
+                // Draw base station
+                ctx.fillStyle = bs.type === 'macro' ? '#2196F3' : '#F44336';
+                ctx.beginPath();
+                ctx.moveTo(x, y - 15);
+                ctx.lineTo(x - 10, y + 10);
+                ctx.lineTo(x + 10, y + 10);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Draw base station ID
+                ctx.fillStyle = '#333';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`BS${bs.id}`, x, y + 35);
+                
+                // Draw load indicator
+                const loadWidth = (bs.load / 100) * 20;
+                ctx.fillStyle = bs.load > 80 ? '#F44336' : bs.load > 50 ? '#FF9800' : '#4CAF50';
+                ctx.fillRect(x - 10, y + 40, loadWidth, 4);
+            }
+            
+            // Draw user equipment and connections
+            if (topology.user_equipment) {
+                for (const ue of topology.user_equipment) {
+                    const x = ue.x * scale + offset;
+                    const y = ue.y * scale + offset;
+                    
+                    // Draw connection line
+                    if (ue.connected && ue.connected_bs >= 0) {
+                        const bs = topology.base_stations.find(b => b.id === ue.connected_bs);
+                                       if (bs) {
+                            const bsX = bs.x * scale + offset;
+                            const bsY = bs.y * scale + offset;
+                            
+                            ctx.strokeStyle = '#4CAF50';
+                            ctx.lineWidth = 1;
+                            ctx.setLineDash([5, 5]);
+                            ctx.beginPath();
+                            ctx.moveTo(x, y);
+                            ctx.lineTo(bsX, bsY);
+                            ctx.stroke();
+                            ctx.setLineDash([]);
+                        }
+                    }
+                    
+                    // Draw UE
+                    ctx.fillStyle = ue.connected ? '#4CAF50' : '#9E9E9E';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 5, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+            }
+        }
+        
+        async function updateDashboard() {
+            try {
+                const summary = await fetch('/api/summary').then(r => r.json());
+                
+                if (summary.time !== undefined) {
+                    document.getElementById('connected-ues').textContent = summary.connected_ues || 0;
+                    document.getElementById('total-handovers').textContent = summary.total_handovers || 0;
+                    document.getElementById('avg-latency').textContent = summary.avg_latency || 0;
+                    document.getElementById('avg-throughput').textContent = summary.avg_throughput || 0;
+                    document.getElementById('beamforming').textContent = summary.beamforming_efficiency || 0;
+                    document.getElementById('mimo').textContent = summary.mimo_gain || 0;
+                    document.getElementById('resources').textContent = summary.resource_utilization || 0;
+                    document.getElementById('sim-time').textContent = summary.time || 0;
+                    document.getElementById('terahertz').textContent = summary.terahertz_utilization || 0;
+                    document.getElementById('ai-efficiency').textContent = summary.ai_efficiency || 0;
+                    document.getElementById('holographic').textContent = summary.holographic_capability || 0;
+                    document.getElementById('edge').textContent = summary.edge_computing_load || 0;
+                }
+                
+                const topology = await fetch('/api/topology').then(r => r.json());
+                drawTopology(topology);
+                
+                const stats = await fetch('/api/stats').then(r => r.json());
+                if (stats.length > 0) {
+                    const times = stats.map(s => s.time);
+                    const latency = stats.map(s => s.avg_latency);
+                    const throughput = stats.map(s => s.avg_throughput);
+                    const handovers = stats.map(s => s.total_handovers);
+                    const connected = stats.map(s => s.connected_ues);
+                    
+                    latencyChart.data.labels = times;
+                    latencyChart.data.datasets[0].data = latency;
+                    latencyChart.update();
+                    
+                    throughputChart.data.labels = times;
+                    throughputChart.data.datasets[0].data = throughput;
+                    throughputChart.update();
+                    
+                    handoverChart.data.labels = times.slice(-10);
+                    handoverChart.data.datasets[0].data = handovers.slice(-10);
+                    handoverChart.update();
+                    
+                    networkLoadChart.data.labels = times;
+                    networkLoadChart.data.datasets[0].data = connected;
+                    networkLoadChart.update();
+                }
+                
+                const predictions = await fetch('/api/predictions').then(r => r.json());
+                if (predictions.length > 0) {
+                    const pTimes = predictions.map(p => p.time);
+                    const predicted = predictions.map(p => p.predicted_load);
+                    const actual = predictions.map(p => p.actual_load);
+                    
+                    predictionChart.data.labels = pTimes;
+                    predictionChart.data.datasets[0].data = predicted;
+                    predictionChart.data.datasets[1].data = actual;
+                    predictionChart.update();
+                }
+                
+                const anomalies = await fetch('/api/anomalies').then(r => r.json());
+                if (anomalies.length > 0) {
+                    const aTimes = anomalies.map(a => a.time);
+                    const anomalyData = aTimes.map((t, i) => 1);
+                    
+                    anomalyChart.data.labels = aTimes;
+                    anomalyChart.data.datasets[0].data = anomalyData;
+                    anomalyChart.update();
+                }
+                
+                if (stats.length > 0) {
+                    const times = stats.map(s => s.time);
+                    
+                    const beamformingData = stats.map(s => summary.beamforming_efficiency || 0);
+                    beamformingChart.data.labels = times;
+                    beamformingChart.data.datasets[0].data = beamformingData;
+                    beamformingChart.update();
+                    
+                    const mimoData = stats.map(s => summary.mimo_gain || 0);
+                    mimoGainChart.data.labels = times;
+                    mimoGainChart.data.datasets[0].data = mimoData;
+                    mimoGainChart.update();
+                    
+                    const terahertzData = stats.map(s => summary.terahertz_utilization || 0);
+                    const aiData = stats.map(s => summary.ai_efficiency || 0);
+                    const holographicData = stats.map(s => summary.holographic_capability || 0);
+                    const edgeData = stats.map(s => summary.edge_computing_load || 0);
+                    
+                    g6FeaturesChart.data.labels = times;
+                    g6FeaturesChart.data.datasets[0].data = terahertzData;
+                    g6FeaturesChart.data.datasets[1].data = aiData;
+                    g6FeaturesChart.data.datasets[2].data = holographicData;
+                    g6FeaturesChart.data.datasets[3].data = edgeData;
+                    g6FeaturesChart.update();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        setInterval(updateDashboard, 2000);
+        updateDashboard();
+    </script>
+</body>
+</html>
+
